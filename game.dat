@@ -1,0 +1,106 @@
+#include <iostream>
+using namespace std;
+
+char board[3][3]; // Game board
+
+// Function to initialize the board
+void initializeBoard() {
+    char pos = '1';
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            board[i][j] = pos++;
+        }
+    }
+}
+
+// Function to display the board
+void displayBoard() {
+    cout << "\n";
+    for (int i = 0; i < 3; i++) {
+        cout << " ";
+        for (int j = 0; j < 3; j++) {
+            cout << board[i][j];
+            if (j < 2) cout << " | ";
+        }
+        cout << "\n";
+        if (i < 2) cout << "---|---|---\n";
+    }
+    cout << "\n";
+}
+
+// Function to check win condition
+bool checkWin(char player) {
+    // Check rows and columns
+    for (int i = 0; i < 3; i++) {
+        if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
+            (board[0][i] == player && board[1][i] == player && board[2][i] == player))
+            return true;
+    }
+    // Check diagonals
+    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
+        (board[0][2] == player && board[1][1] == player && board[2][0] == player))
+        return true;
+
+    return false;
+}
+
+// Function to check if board is full (draw)
+bool isDraw() {
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            if (board[i][j] != 'X' && board[i][j] != 'O')
+                return false;
+    return true;
+}
+
+// Function to make a move
+bool makeMove(char player, int position) {
+    int row = (position - 1) / 3;
+    int col = (position - 1) % 3;
+
+    if (board[row][col] != 'X' && board[row][col] != 'O') {
+        board[row][col] = player;
+        return true;
+    }
+    return false;
+}
+
+int main() {
+    char player = 'X';
+    int position;
+    char choice;
+
+    do {
+        initializeBoard();
+        bool gameOver = false;
+
+        while (!gameOver) {
+            displayBoard();
+            cout << "Player " << player << ", enter position (1-9): ";
+            cin >> position;
+
+            if (position < 1 || position > 9 || !makeMove(player, position)) {
+                cout << "Invalid move! Try again.\n";
+                continue;
+            }
+
+            if (checkWin(player)) {
+                displayBoard();
+                cout << "Player " << player << " wins!\n";
+                gameOver = true;
+            } else if (isDraw()) {
+                displayBoard();
+                cout << "It's a draw!\n";
+                gameOver = true;
+            } else {
+                player = (player == 'X') ? 'O' : 'X'; // Switch player
+            }
+        }
+
+        cout << "Do you want to play again? (y/n): ";
+        cin >> choice;
+    } while (choice == 'y' || choice == 'Y');
+
+    cout << "Thanks for playing!\n";
+    return 0;
+}
